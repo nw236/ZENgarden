@@ -11,6 +11,7 @@ real*8      ::   vel
 real*8      ::   cA, cB
 
 integer     ::   phase
+integer, parameter :: phaseA=1, phaseB=2
 integer		::	 i
 integer		::	 outUnit
 
@@ -61,17 +62,21 @@ integer		::	 outUnit
  do i=1, 10
 
    ! calc chemical potentials
-   phase = 1
-   muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
-   muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
+   phase = phaseA
+   !muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
+   !muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
+   muA(phase) = chemPot(phase,1,moleA(phase),temp)
+   muB(phase) = chemPot(phase,2,moleA(phase),temp)
 
-   phase = 2
-   muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
-   muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
+   phase = phaseB
+   !muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
+   !muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
+   muA(phase) = chemPot(phase,1,moleA(phase),temp)
+   muB(phase) = chemPot(phase,2,moleA(phase),temp)
   
    ! Calc flux between phases
-   jA = -1.0 * MA * moleATotal * (muA(2)-muA(1)) / dz
-   jB = -1.0 * MB * moleBTotal * (muB(2)-muB(1)) / dz
+   jA = -1.0 * MA * moleATotal * (muA(phaseB)-muA(phaseA)) / dz
+   jB = -1.0 * MB * moleBTotal * (muB(phaseB)-muB(phaseA)) / dz
 
    ! Calc change in composition
    cA = moleAtotal * dt/dz *jA

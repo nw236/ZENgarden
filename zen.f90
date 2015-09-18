@@ -9,6 +9,7 @@ real*8      ::   dt
 real*8      ::   Vm
 real*8      ::   vel
 real*8      ::   cA, cB
+real*8      ::   dV, intfArea
 
 integer     ::   phase
 integer, parameter :: phaseA=1, phaseB=2
@@ -63,21 +64,24 @@ integer		::	 outUnit
 
    ! calc chemical potentials
    phase = phaseA
-   !muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
-   !muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
    muA(phase) = chemPot(phase,1,moleA(phase),temp)
-   muB(phase) = chemPot(phase,2,moleA(phase),temp)
-
+   muB(phase) = chemPot(phase,2,moleB(phase),temp)
+   
    phase = phaseB
-   !muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
-   !muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
    muA(phase) = chemPot(phase,1,moleA(phase),temp)
-   muB(phase) = chemPot(phase,2,moleA(phase),temp)
+   muB(phase) = chemPot(phase,2,moleB(phase),temp)
   
    ! Calc flux between phases
    jA = -1.0 * MA * moleATotal * (muA(phaseB)-muA(phaseA)) / dz
    jB = -1.0 * MB * moleBTotal * (muB(phaseB)-muB(phaseA)) / dz
 
+   ! Update Phase-volume-fractions
+   dV = intfArea * Vm * (jA+jB) * dt
+   frac(1)=frac(1)+dV
+   frac(2)=frac(2)-dV
+   
+   
+   
    ! Calc change in composition
    cA = moleAtotal * dt/dz *jA
    cB = moleBtotal * dt/dz *jB
@@ -95,7 +99,7 @@ integer		::	 outUnit
    
    
    vel = Vm * (jA + jB)
-   print*, vel, jA, jB
+   print*, vel, jA, jB, frac
    
    
    ! output

@@ -40,16 +40,20 @@ function chemPot(phase,component,m,Temp) result(mu)
   integer :: component   ! component selector
   real*8  :: m       ! molefraction
   real*8  :: Temp    ! Temperature
-  real*8	:: mu
+  real*8  :: mu
   
   ! function could be improved by calculation all 
   !   chemp.Pot. for all component of a phase, Fewer function calls.
 
   mu = muO(phase,component) + 8.314*Temp*log(m)
+  !print*, 'Calc mu',mu,muO(phase,component),Temp,m
+  
 end function
 
 
-
+  !muA(phase)= muAO(phase) + 8.314 * temp *log(moleA(phase))
+  !muB(phase)= muBO(phase) + 8.314 * temp *log(moleB(phase))
+ 
 
 !
 subroutine GibbsE(G,phase,m,Temp)
